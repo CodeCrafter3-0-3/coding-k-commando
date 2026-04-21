@@ -94,7 +94,10 @@ export type Database = {
           ai_feedback: Json | null
           ai_score: number | null
           created_at: string
+          external_url: string | null
           id: string
+          source_platform: string | null
+          source_type: string
           status: string
           thumbnail_url: string | null
           title: string
@@ -108,7 +111,10 @@ export type Database = {
           ai_feedback?: Json | null
           ai_score?: number | null
           created_at?: string
+          external_url?: string | null
           id?: string
+          source_platform?: string | null
+          source_type?: string
           status?: string
           thumbnail_url?: string | null
           title: string
@@ -122,7 +128,10 @@ export type Database = {
           ai_feedback?: Json | null
           ai_score?: number | null
           created_at?: string
+          external_url?: string | null
           id?: string
+          source_platform?: string | null
+          source_type?: string
           status?: string
           thumbnail_url?: string | null
           title?: string
