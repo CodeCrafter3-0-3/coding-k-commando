@@ -73,11 +73,14 @@ Deno.serve(async (req) => {
 
     const { data: video, error: vErr } = await supabase
       .from("videos")
-      .select("id, title, user_id, status")
+      .select("id, title, user_id, status, video_url, external_url, source_type, source_platform")
       .eq("id", video_id)
       .maybeSingle();
     if (vErr || !video) throw vErr ?? new Error("Video not found");
     if (video.user_id !== userId) throw new Error("Forbidden");
+
+    const sourceUrl = (video as any).external_url ?? (video as any).video_url ?? null;
+    const platform = (video as any).source_platform ?? ((video as any).source_type === "link" ? "link" : "upload");
 
     await supabase.from("videos").update({ viral_status: "analyzing" }).eq("id", video_id);
 
@@ -101,7 +104,7 @@ Deno.serve(async (req) => {
               },
               {
                 role: "user",
-                content: `Video title: "${video.title}". Predict an AI Reach Score (0-100), list 3 viral triggers it likely has, give 3 concrete suggestions to improve, and rate hook/pacing/trend_alignment as weak/average/strong/high/fast/slow.`,
+                content: `Video title: "${video.title}". Source: ${platform} (${sourceUrl ?? "no url"}). "Watch" the content via the URL if possible, then predict an AI Reach Score (0-100), list 3 viral triggers it likely has, give 3 concrete suggestions to improve, and rate hook/pacing/trend_alignment as weak/average/strong/high/fast/slow.`,
               },
             ],
             tools: [

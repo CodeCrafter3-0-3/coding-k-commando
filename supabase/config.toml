@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.seed-demo-data]
 verify_jwt = false
+
+[functions.process-external-video]
+verify_jwt = false
