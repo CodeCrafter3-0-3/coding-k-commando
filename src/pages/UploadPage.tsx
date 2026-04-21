@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { DashboardLayout } from "@/components/creator/DashboardLayout";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { celebrate } from "@/lib/confetti";
 
 type UploadState = "idle" | "uploading" | "success" | "error";
 
@@ -84,7 +85,17 @@ export default function UploadPage() {
         stopFakeProgress();
         setProgress(100);
         setState("success");
-        toast({ title: "Upload complete", description: "Sending to AI Reviewer…" });
+
+        // First-upload celebration
+        try {
+          const { count } = await supabase
+            .from("videos")
+            .select("id", { count: "exact", head: true })
+            .eq("user_id", user.id);
+          if ((count ?? 0) <= 1) celebrate();
+        } catch {/* ignore */}
+
+        toast({ title: "Upload complete 🎬", description: "Sending to AI Reviewer…" });
 
         supabase.functions.invoke("analyze-video", { body: { video_id: inserted.id } }).catch(() => {});
         setTimeout(() => navigate(`/dashboard/video/${inserted.id}`), 800);

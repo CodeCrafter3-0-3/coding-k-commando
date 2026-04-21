@@ -2,11 +2,69 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Creator OS — Deep space dark, glassmorphism, electric indigo */
+/* Creator OS — Dual-mode: Midnight Obsidian (dark) + Studio White (light) */
 
 @layer base {
+  /* ===== Light theme — Studio White ===== */
   :root {
-    /* Default = dark (creator OS is dark-first) */
+    --background: 0 0% 100%;
+    --foreground: 240 18% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 18% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 18% 12%;
+
+    --primary: 245 85% 58%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 250 90% 65%;
+
+    --secondary: 220 16% 96%;
+    --secondary-foreground: 240 18% 12%;
+
+    --muted: 220 16% 96%;
+    --muted-foreground: 240 6% 42%;
+
+    --accent: 270 80% 60%;
+    --accent-foreground: 0 0% 100%;
+
+    --success: 150 70% 40%;
+    --warning: 35 95% 50%;
+
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 215 20% 90%;     /* #E2E8F0-ish */
+    --input: 215 20% 90%;
+    --ring: 245 85% 58%;
+
+    --radius: 1rem;
+
+    /* Glass surfaces — white tint */
+    --glass: 0 0% 100% / 0.7;
+    --glass-border: 215 25% 70% / 0.25;
+
+    --gradient-primary: linear-gradient(135deg, hsl(245 85% 58%), hsl(270 80% 60%));
+    --gradient-glow: radial-gradient(circle at 30% 20%, hsl(245 85% 58% / 0.18), transparent 60%),
+                     radial-gradient(circle at 80% 80%, hsl(270 80% 60% / 0.15), transparent 60%);
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100% / 0.85), hsl(220 30% 98% / 0.7));
+
+    --shadow-glow: 0 0 32px hsl(245 85% 58% / 0.22);
+    --shadow-elegant: 0 20px 60px -20px hsl(245 85% 30% / 0.18);
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 240 12% 30%;
+    --sidebar-primary: 245 85% 58%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 16% 96%;
+    --sidebar-accent-foreground: 240 18% 12%;
+    --sidebar-border: 215 20% 90%;
+    --sidebar-ring: 245 85% 58%;
+  }
+
+  /* ===== Dark theme — Midnight Obsidian ===== */
+  .dark {
     --background: 240 14% 6%;
     --foreground: 240 10% 96%;
 
@@ -39,19 +97,14 @@
     --input: 240 10% 16%;
     --ring: 245 95% 65%;
 
-    --radius: 1rem;
-
-    /* Glass surfaces */
     --glass: 240 18% 10% / 0.55;
     --glass-border: 240 30% 80% / 0.08;
 
-    /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(245 95% 65%), hsl(270 90% 65%));
     --gradient-glow: radial-gradient(circle at 30% 20%, hsl(245 95% 65% / 0.35), transparent 60%),
                      radial-gradient(circle at 80% 80%, hsl(270 90% 65% / 0.25), transparent 60%);
     --gradient-card: linear-gradient(135deg, hsl(240 18% 12% / 0.7), hsl(240 18% 8% / 0.5));
 
-    /* Shadows */
     --shadow-glow: 0 0 40px hsl(245 95% 65% / 0.35);
     --shadow-elegant: 0 20px 60px -15px hsl(245 95% 30% / 0.45);
 
@@ -79,6 +132,7 @@
     @apply bg-background text-foreground antialiased;
     background-image: var(--gradient-glow);
     background-attachment: fixed;
+    transition: background-color 0.4s ease, color 0.4s ease;
   }
 }
 

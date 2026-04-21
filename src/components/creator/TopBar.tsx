@@ -3,6 +3,8 @@ import { Bell, Search, Command, Database, LogOut, Loader2, Sparkles } from "luci
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { celebrate } from "@/lib/confetti";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,14 +14,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export function TopBar() {
+export function TopBar({ onOpenSearch }: { onOpenSearch?: () => void }) {
   const { user, signOut } = useAuth();
   const [seeding, setSeeding] = useState(false);
 
-  const initials = (user?.email ?? "U")
-    .split("@")[0]
-    .slice(0, 2)
-    .toUpperCase();
+  const initials = (user?.email ?? "U").split("@")[0].slice(0, 2).toUpperCase();
   const handle = user?.email ? `@${user.email.split("@")[0]}` : "@studio";
 
   const handleSeed = async () => {
@@ -27,12 +26,12 @@ export function TopBar() {
     try {
       const { data, error } = await supabase.functions.invoke("seed-demo-data");
       if (error) throw error;
+      celebrate();
       toast({
-        title: "Demo data seeded",
+        title: "Demo data seeded 🎉",
         description: `${data?.videos ?? 0} videos · ${data?.analytics ?? 0} analytics rows`,
       });
-      // Trigger refresh
-      setTimeout(() => window.location.reload(), 600);
+      setTimeout(() => window.location.reload(), 900);
     } catch (e: any) {
       toast({ title: "Seed failed", description: e?.message ?? "Unknown error", variant: "destructive" });
     } finally {
@@ -41,16 +40,22 @@ export function TopBar() {
   };
 
   return (
-    <header className="glass-card mx-4 mt-4 flex items-center gap-4 px-5 py-3 md:mx-0 md:mt-0">
-      <div className="hidden md:flex flex-1 items-center gap-2 rounded-xl border border-border/60 bg-secondary/40 px-3 py-2 text-sm text-muted-foreground">
+    <header className="glass-card flex items-center gap-3 px-4 py-3 md:px-5">
+      <button
+        onClick={onOpenSearch}
+        className="flex flex-1 items-center gap-2 rounded-xl border border-border/60 bg-secondary/40 px-3 py-2 text-sm text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
+      >
         <Search className="h-4 w-4" />
-        <span>Search videos, analytics, settings…</span>
-        <kbd className="ml-auto flex items-center gap-1 rounded-md border border-border bg-background/60 px-1.5 py-0.5 text-[10px] font-medium">
+        <span className="hidden sm:inline">Search videos, metrics, settings…</span>
+        <span className="sm:hidden">Search…</span>
+        <kbd className="ml-auto hidden sm:flex items-center gap-1 rounded-md border border-border bg-background/60 px-1.5 py-0.5 text-[10px] font-medium">
           <Command className="h-3 w-3" /> K
         </kbd>
-      </div>
+      </button>
 
-      <div className="ml-auto flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3">
+        <ThemeToggle />
+
         <button className="relative grid h-10 w-10 place-items-center rounded-xl border border-border/60 bg-secondary/40 transition hover:border-primary/50">
           <Bell className="h-4 w-4" />
           <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-accent shadow-glow" />
