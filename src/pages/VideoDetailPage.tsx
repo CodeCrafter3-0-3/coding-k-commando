@@ -51,7 +51,7 @@ export default function VideoDetailPage() {
     if (error) {
       toast({ title: "Failed to load video", description: error.message, variant: "destructive" });
     }
-    setVideo(data as VideoDetail | null);
+    setVideo(data as unknown as VideoDetail | null);
     setLoading(false);
   };
 
