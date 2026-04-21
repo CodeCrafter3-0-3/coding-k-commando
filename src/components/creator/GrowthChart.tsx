@@ -1,12 +1,10 @@
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-const data = Array.from({ length: 14 }, (_, i) => ({
-  day: `D${i + 1}`,
-  views: 1200 + Math.round(Math.sin(i / 2) * 600 + i * 220 + Math.random() * 300),
-  engagement: 600 + Math.round(Math.cos(i / 2.2) * 280 + i * 110 + Math.random() * 180),
-}));
+interface GrowthChartProps {
+  data: { day: string; views: number; engagement: number }[];
+}
 
-export function GrowthChart() {
+export function GrowthChart({ data }: GrowthChartProps) {
   return (
     <div className="glass-card p-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
