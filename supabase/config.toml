@@ -2,3 +2,9 @@ project_id = "jtsfcywfubaagaqzzfsj"
 
 [functions.ai-ideas]
 verify_jwt = false
+
+[functions.analyze-video]
+verify_jwt = false
+
+[functions.seed-demo-data]
+verify_jwt = false

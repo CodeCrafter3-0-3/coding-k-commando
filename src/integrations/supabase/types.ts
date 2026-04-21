@@ -91,6 +91,8 @@ export type Database = {
       }
       videos: {
         Row: {
+          ai_feedback: Json | null
+          ai_score: number | null
           created_at: string
           id: string
           status: string
@@ -100,8 +102,11 @@ export type Database = {
           user_id: string
           video_url: string | null
           views_count: number
+          viral_status: string
         }
         Insert: {
+          ai_feedback?: Json | null
+          ai_score?: number | null
           created_at?: string
           id?: string
           status?: string
@@ -111,8 +116,11 @@ export type Database = {
           user_id: string
           video_url?: string | null
           views_count?: number
+          viral_status?: string
         }
         Update: {
+          ai_feedback?: Json | null
+          ai_score?: number | null
           created_at?: string
           id?: string
           status?: string
@@ -122,6 +130,7 @@ export type Database = {
           user_id?: string
           video_url?: string | null
           views_count?: number
+          viral_status?: string
         }
         Relationships: [
           {

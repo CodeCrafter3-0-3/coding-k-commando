@@ -3,11 +3,11 @@ import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const items = [
-  { title: "Home", url: "/", icon: Home },
-  { title: "Content", url: "/content", icon: PlayCircle },
-  { title: "Upload", url: "/upload", icon: Upload },
-  { title: "Analytics", url: "/analytics", icon: BarChart3 },
-  { title: "Settings", url: "/settings", icon: Settings },
+  { title: "Home", url: "/dashboard", icon: Home },
+  { title: "Content", url: "/dashboard/content", icon: PlayCircle },
+  { title: "Upload", url: "/dashboard/upload", icon: Upload },
+  { title: "Analytics", url: "/dashboard/analytics", icon: BarChart3 },
+  { title: "Settings", url: "/dashboard/settings", icon: Settings },
 ];
 
 export function CreatorSidebar() {
@@ -28,7 +28,10 @@ export function CreatorSidebar() {
 
         <nav className="flex flex-col gap-1">
           {items.map((item) => {
-            const active = pathname === item.url;
+            const active =
+              item.url === "/dashboard"
+                ? pathname === "/dashboard"
+                : pathname.startsWith(item.url);
             return (
               <NavLink
                 key={item.title}

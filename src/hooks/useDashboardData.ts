@@ -1,21 +1,11 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { getDemoUserId } from "@/lib/demoUser";
+import { useAuth } from "@/hooks/useAuth";
 
 export interface DashboardData {
   loading: boolean;
-  totals: {
-    views: number;
-    engagement: number;
-    revenue: number;
-    subscribers: number;
-  };
-  deltas: {
-    views: number;
-    engagement: number;
-    revenue: number;
-    subscribers: number;
-  };
+  totals: { views: number; engagement: number; revenue: number; subscribers: number };
+  deltas: { views: number; engagement: number; revenue: number; subscribers: number };
   sparks: {
     views: { v: number }[];
     engagement: { v: number }[];
@@ -39,16 +29,15 @@ function pctDelta(curr: number, prev: number) {
 }
 
 export function useDashboardData(): DashboardData {
+  const { user } = useAuth();
   const [data, setData] = useState<DashboardData>(empty);
 
   useEffect(() => {
+    if (!user) return;
     let active = true;
 
     (async () => {
       try {
-        const userId = await getDemoUserId();
-
-        // Pull last 28 days analytics so we can compare 14d vs prior 14d
         const since = new Date();
         since.setDate(since.getDate() - 28);
 
@@ -56,18 +45,13 @@ export function useDashboardData(): DashboardData {
           supabase
             .from("analytics")
             .select("date, views, watch_time, engagement, revenue")
-            .eq("user_id", userId)
+            .eq("user_id", user.id)
             .gte("date", since.toISOString().slice(0, 10))
             .order("date", { ascending: true }),
-          supabase
-            .from("videos")
-            .select("*", { count: "exact", head: true })
-            .eq("user_id", userId),
+          supabase.from("videos").select("*", { count: "exact", head: true }).eq("user_id", user.id),
         ]);
 
         const rows = analytics ?? [];
-
-        // Bucket per day
         const byDay = new Map<string, { v: number; e: number; r: number }>();
         rows.forEach((r) => {
           const key = r.date as string;
@@ -78,7 +62,6 @@ export function useDashboardData(): DashboardData {
           byDay.set(key, cur);
         });
 
-        // Build last 28 days timeline (fill gaps)
         const days: { date: string; v: number; e: number; r: number }[] = [];
         for (let i = 27; i >= 0; i--) {
           const d = new Date();
@@ -90,9 +73,7 @@ export function useDashboardData(): DashboardData {
 
         const last14 = days.slice(-14);
         const prev14 = days.slice(0, 14);
-
-        const sum = (arr: typeof days, k: "v" | "e" | "r") =>
-          arr.reduce((s, x) => s + x[k], 0);
+        const sum = (arr: typeof days, k: "v" | "e" | "r") => arr.reduce((s, x) => s + x[k], 0);
 
         const totals = {
           views: sum(last14, "v"),
@@ -100,31 +81,23 @@ export function useDashboardData(): DashboardData {
           revenue: sum(last14, "r"),
           subscribers: subsCount ?? 0,
         };
-
         const prev = {
           views: sum(prev14, "v"),
           engagement: sum(prev14, "e"),
           revenue: sum(prev14, "r"),
         };
-
         const deltas = {
           views: pctDelta(totals.views, prev.views),
           engagement: pctDelta(totals.engagement, prev.engagement),
           revenue: pctDelta(totals.revenue, prev.revenue),
           subscribers: 0,
         };
-
-        const growth = last14.map((d) => ({
-          day: d.date.slice(5),
-          views: d.v,
-          engagement: d.e,
-        }));
-
+        const growth = last14.map((d) => ({ day: d.date.slice(5), views: d.v, engagement: d.e }));
         const sparks = {
           views: last14.map((d) => ({ v: d.v })),
           engagement: last14.map((d) => ({ v: d.e })),
           revenue: last14.map((d) => ({ v: d.r })),
-          subscribers: last14.map((d, i) => ({ v: (subsCount ?? 0) * (0.9 + i * 0.008) })),
+          subscribers: last14.map((_, i) => ({ v: (subsCount ?? 0) * (0.9 + i * 0.008) })),
         };
 
         if (active) setData({ loading: false, totals, deltas, sparks, growth });
@@ -134,10 +107,8 @@ export function useDashboardData(): DashboardData {
       }
     })();
 
-    return () => {
-      active = false;
-    };
-  }, []);
+    return () => { active = false; };
+  }, [user]);
 
   return data;
 }
